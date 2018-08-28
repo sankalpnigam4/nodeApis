@@ -10,5 +10,6 @@ router.get('/test', controller.test);
 router.post('/create',controller.register);
 router.post('/sendmessage',controller.send_message);
 router.get('/inbox',controller.inbox);
+router.put('/block/:username',controller.blocked);
 
 module.exports = router;

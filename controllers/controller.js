@@ -1,5 +1,6 @@
 const User = require('../models/user.model');
 const Message = require('../models/messages.model');
+const Blocked = require('../models/blocked.model');
 
 //Simple version, without validation or sanitation
 exports.test = function (req, res) {
@@ -56,3 +57,22 @@ exports.inbox = function (req, res) {
         res.send(userMessage);
     })
 };
+
+exports.blocked = function(req,res){
+
+    let blocked = new Blocked(
+        {
+            username: req.params.username,
+            from : req.headers['username']
+
+        }
+    );
+
+    blocked.save(function (err) {
+        if (err) {
+            return next(err);
+        }
+        res.send('UserName added into blocked list');
+    });  
+    
+}
