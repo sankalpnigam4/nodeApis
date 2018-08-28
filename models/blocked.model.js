@@ -7,5 +7,5 @@ let blocked = new Schema({
 });
 
 
-// Export the model
+
 module.exports = mongoose.model('blocked', blocked);

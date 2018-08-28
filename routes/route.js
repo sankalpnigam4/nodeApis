@@ -6,8 +6,9 @@ const controller = require('../controllers/controller');
 
 
 // a simple test url to check that all of our files are communicating correctly.
-router.get('/test', controller.test);
-router.post('/create',controller.register);
+
+router.post('/login',controller.login);
+router.post('/register',controller.register);
 router.post('/sendmessage',controller.send_message);
 router.get('/inbox',controller.inbox);
 router.put('/block/:username',controller.blocked);
