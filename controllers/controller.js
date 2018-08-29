@@ -4,7 +4,6 @@ const Blocked = require('../models/blocked.model');
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 var config = require('../config');
-var verify_token = require('../Verifytoken');
 
 
 
@@ -27,31 +26,37 @@ exports.register = function(req,res)
         var token = jwt.sign({ id: user._id }, config.secret, {
             expiresIn: 86400 // expires in 24 hours
           });
+          config.secret = token;
+          config.loggeduser = user.username;
           res.status(200).send({ auth: true, token: token });
     });
 };
 
 exports.send_message = function(req,res) {
+    if(req.headers['authorization'] == config.secret ) {
     let message = new Message(
         {
             owner: req.body.owner,
-            from: req.body.from,
+            from: config.loggeduser,
             message: req.body.message,
-            subject: req.body.subject
+            subject: req.body.subject,
 
         }
     );
 
     message.save(function (err) {
         if (err) {
-            return next(err);
+            console.log(err);
         }
         res.send('Message has been sent successfully');
     });
+
+}
 }
 
 exports.inbox = function (req, res) {
-    Message.find({},function (err, message) {
+    if(req.headers['authorization'] == config.secret ) {
+    Message.find({owner:config.loggeduser},function (err, message) {
         var userMessage = {};
 
         message.forEach(function(message) {
@@ -60,14 +65,17 @@ exports.inbox = function (req, res) {
     
         res.send(userMessage);
     })
+  }
 };
 
 exports.blocked = function(req,res){
-
+    
+    if(req.headers['authorization'] == config.secret )
+ {
     let blocked = new Blocked(
         {
             username: req.params.username,
-            from : req.headers['username']
+            from : config.loggeduser
 
         }
     );
@@ -78,7 +86,7 @@ exports.blocked = function(req,res){
         }
         res.send('UserName added into blocked list');
     });  
-    
+ }    
 }
 
 exports.login = function(req, res) {
@@ -94,7 +102,8 @@ exports.login = function(req, res) {
         var token = jwt.sign({ id: user._id }, config.secret, {
             expiresIn: 86400 // expires in 24 hours
         });
-
+        config.secret = token;
+        config.loggeduser = user.username;
         res.status(200).send({ auth: true, token: token });
     });
 };
